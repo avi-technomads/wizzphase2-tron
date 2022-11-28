@@ -20,7 +20,8 @@ import $ from "jquery";
 import Web3 from "web3";
 import { Link, useNavigate } from "react-router-dom";
 import CommingSoon from "../CommingSoon/CommingSoon";
-import TronWeb from "tronweb";
+
+import WithDraw from "../popup/WithDraw";
 
 function Dashboard({ totlenode }) {
   useEffect(() => {
@@ -28,6 +29,9 @@ function Dashboard({ totlenode }) {
   }, []);
 
   const [open, setopen] = useState(false);
+
+  const [openWithdrawPopup, setOpenWithdrawPopup] = useState(false);
+
   const [drop, setdrop] = useState(false);
   const [transaction, settransaction] = useState();
   const [totalsupply, settotalsupply] = useState([]);
@@ -55,6 +59,11 @@ function Dashboard({ totlenode }) {
     } else {
       setopen(!open);
     }
+  };
+
+  const withdrawTronPopup = () => {
+    setOpenWithdrawPopup(true);
+    console.log(`----worked----`)
   };
 
   // =======claim data========
@@ -143,292 +152,6 @@ function Dashboard({ totlenode }) {
       balance: 0,
     },
   ];
-
-  const paymentAddress = "0x30a5d60Db900Fa46336A0EDC9fd1Ae8851362f79"; //Your wallet address to rec payment
-  // 0x30a5d60Db900Fa46336A0EDC9fd1Ae8851362f79
-  const BUSD_CONTRACT = "0xe9e7cea3dedca5984780bafc599bd69add087d56"; //BUSD CONTRACT Address
-  const BUSD_ABI = [
-    {
-      inputs: [],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "constructor",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "owner",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "spender",
-          type: "address",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "value",
-          type: "uint256",
-        },
-      ],
-      name: "Approval",
-      type: "event",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "previousOwner",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "newOwner",
-          type: "address",
-        },
-      ],
-      name: "OwnershipTransferred",
-      type: "event",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "from",
-          type: "address",
-        },
-        { indexed: true, internalType: "address", name: "to", type: "address" },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "value",
-          type: "uint256",
-        },
-      ],
-      name: "Transfer",
-      type: "event",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "_decimals",
-      outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "_name",
-      outputs: [{ internalType: "string", name: "", type: "string" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "_symbol",
-      outputs: [{ internalType: "string", name: "", type: "string" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        { internalType: "address", name: "owner", type: "address" },
-        { internalType: "address", name: "spender", type: "address" },
-      ],
-      name: "allowance",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        { internalType: "address", name: "spender", type: "address" },
-        { internalType: "uint256", name: "amount", type: "uint256" },
-      ],
-      name: "approve",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [{ internalType: "address", name: "account", type: "address" }],
-      name: "balanceOf",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-      name: "burn",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "decimals",
-      outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        { internalType: "address", name: "spender", type: "address" },
-        { internalType: "uint256", name: "subtractedValue", type: "uint256" },
-      ],
-      name: "decreaseAllowance",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "getOwner",
-      outputs: [{ internalType: "address", name: "", type: "address" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        { internalType: "address", name: "spender", type: "address" },
-        { internalType: "uint256", name: "addedValue", type: "uint256" },
-      ],
-      name: "increaseAllowance",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-      name: "mint",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "name",
-      outputs: [{ internalType: "string", name: "", type: "string" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "owner",
-      outputs: [{ internalType: "address", name: "", type: "address" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [],
-      name: "renounceOwnership",
-      outputs: [],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "symbol",
-      outputs: [{ internalType: "string", name: "", type: "string" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "totalSupply",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        { internalType: "address", name: "recipient", type: "address" },
-        { internalType: "uint256", name: "amount", type: "uint256" },
-      ],
-      name: "transfer",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        { internalType: "address", name: "sender", type: "address" },
-        { internalType: "address", name: "recipient", type: "address" },
-        { internalType: "uint256", name: "amount", type: "uint256" },
-      ],
-      name: "transferFrom",
-      outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
-      name: "transferOwnership",
-      outputs: [],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-  ];
-
-  //BUSD CONTRACT ABI
-  var web3 = null;
-  var instanced = null;
-  var chainId = null;
-  async function changeToMain() {
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x38" }], //MAIN BSC 0x38      // bsc testnet= 0x61
-    });
-  }
 
   // ==============placeOrder API=========
 
@@ -533,23 +256,6 @@ function Dashboard({ totlenode }) {
     } catch (err) {}
   };
 
-  // const obj = async () => {
-  //   if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-  //     var tronweb = window.tronWeb;
-  //     var tx = await tronweb.transactionBuilder.sendTrx(
-  //       "TT8QSND3jHSMLqhJQ9JpwQohKp5HMHQ8jv",
-  //       value * 10 ** 6,
-  //       walletAddress
-  //     );
-  //     var signedTx = await tronweb.trx.sign(tx);
-  //     var broastTx = await tronweb.trx.sendRawTransaction(signedTx);
-  //     console.log(broastTx);
-  //     // txnData();
-
-  //   }
-
-  // };
-
   var obj = async () => {
     if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
       //if (window.tronLink.tronWeb)
@@ -566,44 +272,7 @@ function Dashboard({ totlenode }) {
     }
   };
 
-  const withdrawTron = async () => {
-    try {
-      const HttpProvider = TronWeb.providers.HttpProvider;
-      const fullNode = new HttpProvider("https://api.shasta.trongrid.io");
-      const solidityNode = new HttpProvider("https://api.shasta.trongrid.io");
-      const eventServer = new HttpProvider("https://api.shasta.trongrid.io");
-      const privateKey =
-        "4f2c15814342c9b571e7ca465dd0c66763d5664f2747313fe88d70af3fe8e085"; // Your PrivateKey
 
-      const tronWeb = new TronWeb(
-        fullNode,
-        solidityNode,
-        eventServer,
-        privateKey
-      );
-
-      const ACCOUNT = "TT8QSND3jHSMLqhJQ9JpwQohKp5HMHQ8jv"; // Receiver address
-      const memo = "tttttttttttttttransfer";
-      console.log(tronWeb.defaultAddress.base58, "=>", ACCOUNT);
-
-      const unSignedTxn = await tronWeb.transactionBuilder.sendTrx(
-        ACCOUNT,
-        2 * 10 ** 6
-      );
-      const unSignedTxnWithNote = await tronWeb.transactionBuilder.addUpdateData(
-        unSignedTxn,
-        memo,
-        "utf8"
-      );
-      const signedTxn = await tronWeb.trx.sign(unSignedTxnWithNote);
-      console.log("signed =>", signedTxn);
-      const ret = await tronWeb.trx.sendRawTransaction(signedTxn);
-      console.log("broadcast =>", ret);
-      console.log("ok");
-    } catch (e) {
-      console.log(e, "------------");
-    }
-  };
 
   const payTron = () => {
     if (getdata?.data?.token === undefined) {
@@ -688,6 +357,8 @@ function Dashboard({ totlenode }) {
     addWallet(wallet?.toString());
   };
 
+  const openwithdrawTron = () => {};
+
   useEffect(() => {
     if (!effectCalled.current) {
       nodeSupplies();
@@ -719,7 +390,7 @@ function Dashboard({ totlenode }) {
                 </p>
               </div>
               {/* <Link to="/investments"> */}
-              <button onClick={withdrawTron}>
+              <button onClick={withdrawTronPopup}>
                 <Button btn={"Withdraw"} />
               </button>
               {/* </Link> */}
@@ -1069,6 +740,8 @@ function Dashboard({ totlenode }) {
             </div>
           </div>
         )}
+
+        {openWithdrawPopup && <WithDraw show={()=>setOpenWithdrawPopup()} />}
       </div>
     </>
   );
