@@ -9,7 +9,6 @@ import MainTitle from "../../MainTitle/MainTitle";
 import busd from "../../img/busd.png";
 import tronImg from "../../img/tron-logo.svg";
 import axios from "axios";
-import TronWeb from "tronweb";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -21,6 +20,7 @@ import $ from "jquery";
 import Web3 from "web3";
 import { Link, useNavigate } from "react-router-dom";
 import CommingSoon from "../CommingSoon/CommingSoon";
+import TronWeb from "tronweb";
 
 function Dashboard({ totlenode }) {
   useEffect(() => {
@@ -566,36 +566,35 @@ function Dashboard({ totlenode }) {
     }
   };
 
-  const HttpProvider = TronWeb.providers.HttpProvider;
-  const fullNode = new HttpProvider("https://api.shasta.trongrid.io");
-  const solidityNode = new HttpProvider("https://api.shasta.trongrid.io");
-  const eventServer = new HttpProvider("https://api.shasta.trongrid.io");
-  const privateKey =
-    "4f2c15814342c9b571e7ca465dd0c66763d5664f2747313fe88d70af3fe8e085"; // Your PrivateKey
-
-  const tronWeb = new TronWeb(fullNode, solidityNode, eventServer, privateKey);
-
-  const ACCOUNT = "TT8QSND3jHSMLqhJQ9JpwQohKp5HMHQ8jv"; // Receiver address
-  const memo = "tttttttttttttttransfer";
-
-  async function withdrawTron() {
+  const withdrawTron = async () => {
     try {
+      const HttpProvider = TronWeb.providers.HttpProvider;
+      const fullNode = new HttpProvider("https://api.shasta.trongrid.io");
+      const solidityNode = new HttpProvider("https://api.shasta.trongrid.io");
+      const eventServer = new HttpProvider("https://api.shasta.trongrid.io");
+      const privateKey =
+        "4f2c15814342c9b571e7ca465dd0c66763d5664f2747313fe88d70af3fe8e085"; // Your PrivateKey
+
+      const tronWeb = new TronWeb(
+        fullNode,
+        solidityNode,
+        eventServer,
+        privateKey
+      );
+
+      const ACCOUNT = "TT8QSND3jHSMLqhJQ9JpwQohKp5HMHQ8jv"; // Receiver address
+      const memo = "tttttttttttttttransfer";
       console.log(tronWeb.defaultAddress.base58, "=>", ACCOUNT);
 
       const unSignedTxn = await tronWeb.transactionBuilder.sendTrx(
         ACCOUNT,
         2 * 10 ** 6
       );
-      console.log("🚀 ~ unSignedTxn", unSignedTxn);
-
       const unSignedTxnWithNote = await tronWeb.transactionBuilder.addUpdateData(
         unSignedTxn,
         memo,
         "utf8"
       );
-
-      console.log("🚀 ~ unSignedTxnWithNote", unSignedTxnWithNote);
-
       const signedTxn = await tronWeb.trx.sign(unSignedTxnWithNote);
       console.log("signed =>", signedTxn);
       const ret = await tronWeb.trx.sendRawTransaction(signedTxn);
@@ -604,7 +603,7 @@ function Dashboard({ totlenode }) {
     } catch (e) {
       console.log(e, "------------");
     }
-  }
+  };
 
   const payTron = () => {
     if (getdata?.data?.token === undefined) {

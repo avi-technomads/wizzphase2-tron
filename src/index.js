@@ -12,6 +12,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { CookiesProvider } from "react-cookie";
 import ErrorPage from "./components/ErrorPage/ErrorPage";
+window.Buffer = window.Buffer || require("buffer").Buffer;
 
 // devTools: process.env.NODE_ENV !== "production",
 const reducers = combineReducers({
