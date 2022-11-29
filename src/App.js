@@ -26,6 +26,7 @@ function App() {
   const navigate = useNavigate();
   const { encryptData, decryptData } = useEncryption();
   const getdata = decryptData(localStorage.getItem("details"));
+  console.log("🚀 ~ getdata", getdata);
   const [totlenode, settotlenode] = useState();
   const location = useLocation();
   const { pathname } = location;
@@ -38,27 +39,25 @@ function App() {
     }
   }, [getdata?.data?.token]);
 
-  // ==============totalNodes API=========
+  // ============== totalNodes API =========
   const totalNodes = async () => {
-    try {
-      const encrypt = encryptData(
-        JSON.stringify({
-          email: getdata?.data?.userData?.email,
-        })
-      );
-      const result = await instance.post("/totalNodes", {
-        data: encrypt,
-      });
-
-      const results = decryptData(result.data.data);
-
-      if (results.status) {
-        // toast.success(results.message);
-        settotlenode(results?.data?.total);
-      } else {
-        toast.error(results.message);
-      }
-    } catch (err) {}
+    // try {
+    //   const encrypt = encryptData(
+    //     JSON.stringify({
+    //       email: getdata?.data?.userData?.email,
+    //     })
+    //   );
+    //   const result = await instance.post("/totalNodes", {
+    //     data: encrypt,
+    //   });
+    //   const results = decryptData(result.data.data);
+    //   if (results.status) {
+    //     // toast.success(results.message);
+    //     settotlenode(results?.data?.total);
+    //   } else {
+    //     toast.error(results.message);
+    //   }
+    // } catch (err) {}
   };
 
   return (

@@ -40,7 +40,7 @@ export default function Example() {
     {
       id: 5,
       title: "Which wallets is WIZZ DApp support? ",
-      content: `We strongly recommend using MetaMask as it causes the least issues; however, you can use Coinbase Wallet and WalletConnect. `,
+      content: `We strongly recommend using TronLink as it causes the least issues `,
     },
   ];
   return (

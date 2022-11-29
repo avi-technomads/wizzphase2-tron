@@ -118,32 +118,34 @@ function Logo() {
   }, []);
 
   async function connectWallet() {
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-      setWalletAddress(window.tronWeb.defaultAddress.base58);
+    if (window?.tronWeb?.transactionBuilder()) {
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        setWalletAddress(window.tronWeb.defaultAddress.base58);
 
-      try {
-        const encrypt = encryptData(
-          JSON.stringify({
-            walletAddress: window?.tronWeb?.defaultAddress?.base58,
-          })
-        );
+        try {
+          const encrypt = encryptData(
+            JSON.stringify({
+              walletAddress: window?.tronWeb?.defaultAddress?.base58,
+            })
+          );
 
-        const result = await instance.post("/connectUser", {
-          data: encrypt,
-        });
-        console.log("🚀 ~ result", result.data);
-        localStorage.setItem("details", result.data.data);
+          const result = await instance.post("/connectUser", {
+            data: encrypt,
+          });
+          console.log("🚀 ~ result", result.data);
+          localStorage.setItem("details", result.data.data);
 
-        const results = decryptData(result.data.data);
+          const results = decryptData(result.data.data);
 
-        if (results.status) {
-          toast.success(results.message);
-          // localStorage.setItem("token", results.data.token);
-        } else {
-          toast.error(results.message);
+          if (results.status) {
+            toast.success(results.message);
+            // localStorage.setItem("token", results.data.token);
+          } else {
+            toast.error(results.message);
+          }
+        } catch (err) {
+          ////console.log("err" + err);
         }
-      } catch (err) {
-        ////console.log("err" + err);
       }
     }
   }
@@ -168,7 +170,9 @@ function Logo() {
                   btn={`${
                     walletAddress === ""
                       ? "Connect Wallet"
-                      : walletAddress?.slice(0, 3) + "...." + walletAddress?.slice(-3)
+                      : walletAddress?.slice(0, 3) +
+                        "...." +
+                        walletAddress?.slice(-3)
                   }`}
                 />
               </div>

@@ -20,18 +20,10 @@ function PortfolioBalance() {
       // const localData = localStorage.getItem("details", result.data.data)
       // console.log("🚀 ~ file: Trading.jsx ~ line 13 ~ Rewards ~ localData", localData)
 
-      const encrypt = encryptData(
-        JSON.stringify({
-          date: new Date(),
-        })
-        );
-        console.log("🚀 ~ file: PortfolioBalance.jsx ~ line 26 ~ Rewards ~ new Date()", new Date())
-      const result = await instance.post("/rewards", {
-        data: encrypt,
-      });
+      const result = await instance.get("/rewardsHistory");
       const results = decryptData(result.data.data);
 
-      setIsReward(results.data);
+      setIsReward(results.history);
 
       if (results.status) {
         toast.success(results.message);

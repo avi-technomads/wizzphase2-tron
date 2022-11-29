@@ -26,6 +26,9 @@ import WithDraw from "../popup/WithDraw";
 function Dashboard({ totlenode }) {
   useEffect(() => {
     setpopup(true);
+
+    getRewards();
+    getRewardsHistory();
   }, []);
 
   const [open, setopen] = useState(false);
@@ -41,14 +44,16 @@ function Dashboard({ totlenode }) {
   const { encryptData, decryptData } = useEncryption();
   const effectCalled = useRef(false);
   const [totalremaining, settotalremaining] = useState([]);
+  console.log("🚀 ~ totalremaining", totalremaining)
   const navigate = useNavigate();
   const [popup, setpopup] = useState(false);
+  const [rewards, setRewards] = useState(0);
+  const [rewardsHistory, setRewardsHistory] = useState([]);
   const getDetelis = decryptData(localStorage.getItem("quantity"));
   const getdata = decryptData(localStorage.getItem("details"));
-  // console.log("🚀 ~ getdata", getdata);
 
   const [walletAddress, setWalletAddress] = useState("");
-  console.log("🚀 ~ walletAddress", walletAddress);
+  console.log("🚀 ~ walletAddress", walletAddress)
 
   //===== openpopp=====
 
@@ -63,7 +68,6 @@ function Dashboard({ totlenode }) {
 
   const withdrawTronPopup = () => {
     setOpenWithdrawPopup(true);
-    console.log(`----worked----`)
   };
 
   // =======claim data========
@@ -227,9 +231,9 @@ function Dashboard({ totlenode }) {
   }
 
   function gettronweb() {
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-      setWalletAddress(window.tronWeb.defaultAddress.base58);
-    }
+    // if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+    //   setWalletAddress(window.tronWeb.defaultAddress.base58);
+    // }
   }
 
   const txnData = async () => {
@@ -268,11 +272,11 @@ function Dashboard({ totlenode }) {
       );
       var signedTx = await tronweb.trx.sign(tx);
       var broastTx = await tronweb.trx.sendRawTransaction(signedTx);
-      console.log(broastTx);
+      // console.log(broastTx);
+
+      txnData();
     }
   };
-
-
 
   const payTron = () => {
     if (getdata?.data?.token === undefined) {
@@ -280,6 +284,23 @@ function Dashboard({ totlenode }) {
     } else {
       obj();
     }
+  };
+
+  // ========= get rewards API =========
+
+  const getRewards = async () => {
+    try {
+      const result = await instance.get("/rewards");
+
+      const results = decryptData(result.data.data);
+
+      if (results.status) {
+        // toast.success(results.message);
+        setRewards(results.data.userData.rewards);
+      } else {
+        toast.error(results.message);
+      }
+    } catch (err) {}
   };
 
   // ==============nodeSupplies API=========
@@ -298,7 +319,7 @@ function Dashboard({ totlenode }) {
     } catch (err) {}
   };
 
-  // ==============getPrice API=========
+  // ============== getPrice API =========
 
   const getPrice = async () => {
     try {
@@ -314,7 +335,26 @@ function Dashboard({ totlenode }) {
       }
     } catch (err) {}
   };
+
+  // ============== rewardsHistory API =========
+
+  const getRewardsHistory = async () => {
+    try {
+      const result = await instance.get("/rewardsHistory");
+
+      const results = decryptData(result.data.data);
+
+      if (results.status) {
+        // toast.success(results.message);
+        setRewardsHistory(results.history);
+      } else {
+        toast.error(results.message);
+      }
+    } catch (err) {}
+  };
+
   // ==============totalNodes API=========
+
   const remainingNodes = async () => {
     try {
       const result = await instance.get("/remainingNodes");
@@ -357,8 +397,6 @@ function Dashboard({ totlenode }) {
     addWallet(wallet?.toString());
   };
 
-  const openwithdrawTron = () => {};
-
   useEffect(() => {
     if (!effectCalled.current) {
       nodeSupplies();
@@ -385,9 +423,7 @@ function Dashboard({ totlenode }) {
           <div className="nodetype-bg  rounded-2xl p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-[#7351FC] text-2xl font-bold">
-                  Earning Rewards
-                </p>
+                <p className="text-[#7351FC] text-2xl font-bold"></p>
               </div>
               {/* <Link to="/investments"> */}
               <button onClick={withdrawTronPopup}>
@@ -395,7 +431,9 @@ function Dashboard({ totlenode }) {
               </button>
               {/* </Link> */}
             </div>
-            <div className="text-[55px] text-color font-bold mt-2">0.000</div>
+            <div className="text-[55px] text-color font-bold mt-2">
+              {rewards}
+            </div>
             <div className="flex justify-start items-center gap-5 mt-2">
               {claim?.map((index, key) => (
                 <>
@@ -619,7 +657,6 @@ function Dashboard({ totlenode }) {
                               key={i.id}
                               onClick={() => setmark(i)}
                             >
-                              {// console.log(i)}
                               <div className=" flex justify-start items-center gap-4">
                                 <div>
                                   <img
@@ -741,7 +778,7 @@ function Dashboard({ totlenode }) {
           </div>
         )}
 
-        {openWithdrawPopup && <WithDraw show={()=>setOpenWithdrawPopup()} />}
+        {openWithdrawPopup && <WithDraw show={() => setOpenWithdrawPopup()} />}
       </div>
     </>
   );

@@ -4,24 +4,27 @@ import Button from "../../Button/Button";
 import tronImg from "../../img/tron-logo.svg";
 
 const WithDraw = ({ show }) => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(20);
+  const [store, setStore] = useState([]);
+  const [error, setError] = useState("");
+  console.log("🚀 ~ store", store);
 
   //======== increment Quantity========
   function increment() {
     //setCount(prevCount => prevCount+=1);
     setValue(function(prevCount) {
       if (prevCount < 1000) {
-        return (prevCount += 1);
+        return (prevCount += 10);
       }
     });
   }
   // ==============decrement Quantity=========================
   function decrement() {
     setValue(function(prevCount) {
-      if (prevCount > 0) {
-        return (prevCount -= 1);
+      if (prevCount > 20) {
+        return (prevCount -= 10);
       } else {
-        return (prevCount = 0);
+        return (prevCount = 20);
       }
     });
   }
@@ -66,10 +69,12 @@ const WithDraw = ({ show }) => {
       const signedTxn = await tronWeb.trx.sign(unSignedTxnWithNote);
       console.log("signed =>", signedTxn);
       const ret = await tronWeb.trx.sendRawTransaction(signedTxn);
-      console.log("broadcast =>", ret);
+      setStore(ret);
+      // console.log("broadcast =>", ret);
       console.log("ok");
     } catch (e) {
       console.log(e, "------------");
+      setError(e);
     }
   };
 
@@ -80,62 +85,78 @@ const WithDraw = ({ show }) => {
         id="modal"
       >
         <div className="container mx-auto w-11/12 md:w-2/3 max-w-lg">
-          <div className="relative py-8 px-5 md:px-10 nodetype-bg   border-[#14206A] border-2 rounded-3xl shadow-2xl -3xl  ">
-            <h1 className="text-[white] font-lg font-bold tracking-normal leading-tight mb-4">
-              Currency
-            </h1>
+          {!store.result && (
             <>
-              <div className="relative  text-left">
-                <div>
-                  <div className="flex cursor-pointer  justify-between items-center  rounded-md border bg-[#CFD6FE] text-[#515151] px-4 py-3 text-sm font-medium  shadow-sm  focus:outline-none ">
-                    <div className="flex gap-5 justify-center items-center text-lg font-bold">
-                      <img src={tronImg} alt="" className="w-10 h-8" />
-                      <p>TRON (USDT-TRC20)</p>
+              <div className="relative py-8 px-5 md:px-10 nodetype-bg   border-[#14206A] border-2 rounded-3xl shadow-2xl -3xl  ">
+                <h1 className="text-[white] font-lg font-bold tracking-normal leading-tight mb-4">
+                  Currency
+                </h1>
+                <>
+                  <div className="relative  text-left">
+                    <div>
+                      <div className="flex cursor-pointer  justify-between items-center  rounded-md border bg-[#CFD6FE] text-[#515151] px-4 py-3 text-sm font-medium  shadow-sm  focus:outline-none ">
+                        <div className="flex gap-5 justify-center items-center text-lg font-bold">
+                          <img src={tronImg} alt="" className="w-10 h-8" />
+                          <p>TRON (USDT-TRC20)</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </>
+
+                <div className="mt-10">
+                  <label className="text-[white] text-xl font-bold leading-tight tracking-normal ">
+                    Total Cost:
+                  </label>
                 </div>
+
+                <div className=" mb-5 mt-2 flex bot-left1 rounded-lg">
+                  <div
+                    className=" btn-bg p-2  flex justify-center items-center cursor-pointer  border-y border-l"
+                    onClick={decrement}
+                  >
+                    <i className="fa-solid fa-minus text-center"></i>
+                  </div>
+                  <input
+                    className="  focus:outline-none  font-light w-full h-10 flex items-center bg-[#97A5FC]   border-y text-center caret-black"
+                    placeholder="Enter Quantity"
+                    type="number"
+                    value={value}
+                    onChange={handleChange}
+                    min="20"
+                    max="1000"
+                    step="1"
+                    pattern="[0-9]*"
+                  />
+                  <div
+                    className=" btn-bg p-2 flex justify-center items-center cursor-pointer  border-y border-r"
+                    onClick={increment}
+                  >
+                    <i className="fa-solid fa-plus text-center"></i>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => withdrawTron()}
+                  className="mx-auto flex justify-center"
+                >
+                  <Button btn={"Withdraw"} />
+                </button>
+
+                {error && (
+                  <div className="text-white text-center mt-4">
+                    <p>{error}</p>
+                  </div>
+                )}
               </div>
             </>
+          )}
 
-            <div className="mt-10">
-              <label className="text-[white] text-xl font-bold leading-tight tracking-normal ">
-                Total Cost:
-              </label>
+          {store.result && (
+            <div className="text-white text-center relative py-8 px-5 md:px-10 nodetype-bg border-[#14206A] border-2 rounded-3xl -3xl">
+              <p>Withdrawl of {value} TRON is Successful</p>
             </div>
-
-            <div className=" mb-5 mt-2 flex bot-left1 rounded-lg">
-              <div
-                className=" btn-bg p-2  flex justify-center items-center cursor-pointer  border-y border-l"
-                onClick={decrement}
-              >
-                <i className="fa-solid fa-minus text-center"></i>
-              </div>
-              <input
-                className="  focus:outline-none  font-light w-full h-10 flex items-center bg-[#97A5FC]   border-y text-center caret-black"
-                placeholder="Enter Quantity"
-                type="number"
-                value={value}
-                onChange={handleChange}
-                min="0"
-                max="1000"
-                step="1"
-                pattern="[0-9]*"
-              />
-              <div
-                className=" btn-bg p-2 flex justify-center items-center cursor-pointer  border-y border-r"
-                onClick={increment}
-              >
-                <i className="fa-solid fa-plus text-center"></i>
-              </div>
-            </div>
-
-            <button
-              onClick={() => withdrawTron()}
-              className="mx-auto flex justify-center"
-            >
-              <Button btn={"Withdraw"} />
-            </button>
-          </div>
+          )}
         </div>
 
         <div
